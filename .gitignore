@@ -1,0 +1,15 @@
+# Ignore compiled files
+bin/
+build/
+
+# Ignore compiled Java files
+.jar
+.class
+
+# Ignore IDE settings and Gradle junk
+.vscode/
+.idea/
+.gradle/
+
+# Ignore OS garbage
+.DS_Store
