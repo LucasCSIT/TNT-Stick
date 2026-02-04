@@ -1,0 +1,8 @@
+name: TNT-Stick
+version: 0.0.1
+main: io.papermc.tntStick.TNTStick
+description: A plugin that allows the user to summon TNT.
+author: Lucas Garcia
+api: '1.21.11'
+load: STARTUP
+prefix: TNTStick
