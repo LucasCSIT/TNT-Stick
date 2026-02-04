@@ -25,7 +25,7 @@ public class TNTStick extends JavaPlugin implements Listener {
 
   /**
    * Events related to the player holding a stick in their main hand.
-   * @param event
+   * @param event -> The {@code PlayerInteractEvent}
    */
   @EventHandler
   private void onPlayerHasStick(PlayerInteractEvent event) {
@@ -47,7 +47,7 @@ public class TNTStick extends JavaPlugin implements Listener {
 
   /**
    * Events related to the player taking explosive damage due to the TNT Stick.
-   * @param event
+   * @param event -> The {@code EntityDamageEvent}
    */
   @EventHandler
   private void onPlayerTakeExplosionDamage(EntityDamageEvent event) {
@@ -61,30 +61,29 @@ public class TNTStick extends JavaPlugin implements Listener {
 
   /**
    * Shoots out TNT in front of the player. The TNT explodes after a short time.
-   * @param player
+   * @param player -> The player holding the stick
    */
-  private void fireTNT (Player player){
+  private void fireTNT (Player player) {
     Entity entity = player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.TNT);
     entity.setVelocity(player.getLocation().getDirection().multiply(3));
   }
 
   /**
    * Creates an explosion around the player.
-   * @param player
+   * @param player -> The player holding the stick.
    */
-  private void explodeAroundPlayer(Player player){
+  private void explodeAroundPlayer(Player player) {
     // TODO: Explosion occurring 3 times. Should be just once.
     player.getWorld().createExplosion(player.getLocation(), 10);
     player.sendMessage("exploded");
-    return;
   }
 
   /**
    * Checks if the player is holding a stick in their main hand.
-   * @param player
+   * @param player -> The player holding the object.
    * @return {@code True} if the item in the player's main hand is a stick.
    */
-  private boolean isStickInMainHand (Player player){
+  private boolean isStickInMainHand (Player player) {
     return player.getInventory().getItemInMainHand().getType() == Material.STICK;
   }
 }
