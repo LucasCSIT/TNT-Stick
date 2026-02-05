@@ -7,9 +7,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageEvent;import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.Material;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * {@code TNTStick} is a plugin for Minecraft that grants the wielder of a stick abilities related to TNT.
@@ -18,6 +22,9 @@ import org.bukkit.Material;
  * @version 0.2.0
  */
 public class TNTStick extends JavaPlugin implements Listener {
+  private HashMap<UUID, Long> explosionCooldowns = new HashMap<>();
+  private final long COOLDOWN_MS = 100; // 100ms cooldown
+
   @Override
   public void onEnable() {
     Bukkit.getPluginManager().registerEvents(this, this);
@@ -36,12 +43,30 @@ public class TNTStick extends JavaPlugin implements Listener {
       return;
     }
 
-    if (action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
-      fireTNT(player);
+    if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) {
+      return;
     }
 
-    if (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)) {
+    if (action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
+      fireTNT(player);
+      event.setCancelled(true);
+    }
+
+    if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+      // Check cooldown
+      UUID playerId = player.getUniqueId();
+      long currentTime = System.currentTimeMillis();
+
+      if (explosionCooldowns.containsKey(playerId)) {
+        long lastExplosion = explosionCooldowns.get(playerId);
+        if (currentTime - lastExplosion < COOLDOWN_MS) {
+          return; // Still on cooldown
+        }
+      }
+
+      explosionCooldowns.put(playerId, currentTime);
       explodeAroundPlayer(player);
+      event.setCancelled(true);
     }
   }
 
@@ -63,7 +88,7 @@ public class TNTStick extends JavaPlugin implements Listener {
    * Shoots out TNT in front of the player. The TNT explodes after a short time.
    * @param player -> The player holding the stick
    */
-  private void fireTNT (Player player) {
+  private void fireTNT(Player player) {
     Entity entity = player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.TNT);
     entity.setVelocity(player.getLocation().getDirection().multiply(3));
   }
@@ -73,9 +98,7 @@ public class TNTStick extends JavaPlugin implements Listener {
    * @param player -> The player holding the stick.
    */
   private void explodeAroundPlayer(Player player) {
-    // TODO: Explosion occurring 3 times. Should be just once.
     player.getWorld().createExplosion(player.getLocation(), 10);
-    player.sendMessage("exploded");
   }
 
   /**
@@ -83,7 +106,7 @@ public class TNTStick extends JavaPlugin implements Listener {
    * @param player -> The player holding the object.
    * @return {@code True} if the item in the player's main hand is a stick.
    */
-  private boolean isStickInMainHand (Player player) {
+  private boolean isStickInMainHand(Player player) {
     return player.getInventory().getItemInMainHand().getType() == Material.STICK;
   }
 }
