@@ -13,4 +13,4 @@ TNT Stick is a simple Minecraft plugin that grants the wielder of a stick some a
 Please feel free to create issues for any suggestions you have related to this plugin.
 
 ## License
-This plugin is licensed under the GNU General Public License v3.0 (GPL-3.0).
+This plugin is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
